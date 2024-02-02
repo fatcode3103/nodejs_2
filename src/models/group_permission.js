@@ -1,29 +1,32 @@
 "use strict";
 const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
-    class User extends Model {
+    class Group_Permission extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
-            User.belongsTo(models.Role, {
+            Group_Permission.belongsTo(models.Role, {
                 foreignKey: "roleId",
-                as: "roleUserData",
+                as: "RGroupPermissionData",
+            });
+            Group_Permission.belongsTo(models.Permission, {
+                foreignKey: "permissionId",
+                as: "PGroupPermissionData",
             });
         }
     }
-    User.init(
+    Group_Permission.init(
         {
-            name: DataTypes.STRING,
-            age: DataTypes.STRING,
             roleId: DataTypes.STRING,
+            permission: DataTypes.STRING,
         },
         {
             sequelize,
-            modelName: "User",
+            modelName: "Group_Permission",
         }
     );
-    return User;
+    return Group_Permission;
 };
