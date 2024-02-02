@@ -1,6 +1,19 @@
-import { createClient } from "@supabase/supabase-js";
+import { Sequelize } from "sequelize";
 
-const supabaseUrl = "https://fflsbybjerkkmwxntznk.supabase.co";
-const supabaseKey =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmbHNieWJqZXJra213eG50em5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDY4NDQwNjgsImV4cCI6MjAyMjQyMDA2OH0.mKy3AMz3O9TFsNvc3fbDmN9x4eGBhmCxhlOYkVgf0RI";
-const supabase = createClient(supabaseUrl, supabaseKey);
+const sequelize = new Sequelize("demo_nodejs", "root", "root123", {
+    host: "localhost",
+    dialect: "mysql",
+    port: 3308,
+    logging: false,
+});
+
+const connectDB = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log("Connection has been established successfully.");
+    } catch (error) {
+        console.error("Unable to connect to the database:", error);
+    }
+};
+
+export default connectDB;
