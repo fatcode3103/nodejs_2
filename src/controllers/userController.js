@@ -12,9 +12,9 @@ const getAllUsers = async (req, res) => {
     }
 };
 
-const getAllRoles = async (req, res) => {
+const postNewUser = async (req, res) => {
     try {
-        const data = await userService.getAllRoles();
+        const data = await userService.postNewUser(req.body);
         return res.status(200).json(data);
     } catch (e) {
         console.log(e);
@@ -24,4 +24,28 @@ const getAllRoles = async (req, res) => {
     }
 };
 
-export { getAllUsers, getAllRoles };
+const deleteUser = async (req, res) => {
+    try {
+        const data = await userService.deleteUser(req.query.id);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log(e);
+        return res
+            .status(e.errorCode || 500)
+            .json(e.message || "Error from the server");
+    }
+};
+
+const updateUser = async (req, res) => {
+    try {
+        const data = await userService.updateUser(req.body);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log(e);
+        return res
+            .status(e.errorCode || 500)
+            .json(e.message || "Error from the server");
+    }
+};
+
+export { getAllUsers, postNewUser, deleteUser, updateUser };

@@ -1,43 +1,29 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-const livereload = require("livereload");
-const connectLiveReload = require("connect-livereload");
-import connectDB from "./connectDB";
+import createError from "http-errors";
+import express from "express";
+import path from "path";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import logger from "morgan";
+import connectDB from "./connectDB";
 
-var initRouter = require("./src/routes/web");
-var app = express();
+import initRoutes from "./src/routes/web";
 
-//Livereload code
-const liveReloadServer = livereload.createServer();
-liveReloadServer.watch(path.join(__dirname, "public"));
-liveReloadServer.server.once("connection", () => {
-    setTimeout(() => {
-        liveReloadServer.refresh("/");
-    }, 100);
-});
-app.use(connectLiveReload());
+const app = express();
 
 app.use(cors());
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
-
 app.use(logger("dev"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser());
 
-//connectDB
+//router
+app.use("/api", initRoutes);
+
 connectDB();
 
-app.use("/api", initRouter);
-
+//
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     next(createError(404));
