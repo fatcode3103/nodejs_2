@@ -6,6 +6,7 @@ var logger = require("morgan");
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");
 import connectDB from "./connectDB";
+import cors from "cors";
 
 var initRouter = require("./src/routes/web");
 var app = express();
@@ -19,6 +20,8 @@ liveReloadServer.server.once("connection", () => {
     }, 100);
 });
 app.use(connectLiveReload());
+
+app.use(cors());
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
