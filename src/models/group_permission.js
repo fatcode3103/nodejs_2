@@ -14,7 +14,8 @@ module.exports = (sequelize, DataTypes) => {
                 as: "RGroupPermissionData",
             });
             Group_Permission.belongsTo(models.Permission, {
-                foreignKey: "permissionId",
+                foreignKey: "permission",
+                targetKey: "id",
                 as: "PGroupPermissionData",
             });
         }

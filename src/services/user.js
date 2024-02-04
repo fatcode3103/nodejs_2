@@ -2,21 +2,43 @@ import db from "../models/index";
 
 const getAllUsers = async () => {
     try {
-        let res = await db.User.findAll({
+        const res = await db.User.findAll({
             include: {
                 model: db.Role,
                 as: "roleUserData",
-                attributes: ["name"],
+                attributes: ["name", "id"],
+                include: {
+                    model: db.Group_Permission,
+                    as: "RGroupPermissionData",
+                    attributes: ["permission"],
+                    include: {
+                        model: db.Permission,
+                        as: "PGroupPermissionData",
+                        attributes: ["name"],
+                    },
+                },
             },
         });
         if (res) {
-            res = JSON.parse(JSON.stringify(res));
-            res = res.map((item) => {
-                const { roleUserData, ...rest } = item;
-                return { ...rest, role: roleUserData?.name || null };
+            const modifiedRes = res.map((item) => {
+                const { roleUserData, ...rest } = item.get({ plain: true });
+                const permissionArray = [];
+                if (roleUserData && roleUserData.RGroupPermissionData) {
+                    roleUserData.RGroupPermissionData.forEach((innerItem) => {
+                        permissionArray.push(
+                            innerItem.PGroupPermissionData.name
+                        );
+                    });
+                }
+                return {
+                    ...rest,
+                    permission: permissionArray,
+                    role: roleUserData?.name || null,
+                };
             });
+
             return {
-                data: res,
+                data: modifiedRes,
                 message: "Get all users successful",
             };
         }

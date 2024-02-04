@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             Permission.hasMany(models.Group_Permission, {
-                foreignKey: "permissionId",
+                foreignKey: "permission",
                 as: "PGroupPermissionData",
             });
         }
@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     Permission.init(
         {
             name: DataTypes.STRING,
-            permissionId: DataTypes.STRING,
         },
         {
             sequelize,
