@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             User.belongsTo(models.Role, {
                 foreignKey: "roleId",
-                targetKey: "roleId",
+                targetKey: "id",
                 as: "roleUserData",
             });
         }
@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             name: DataTypes.STRING,
             age: DataTypes.STRING,
-            roleId: DataTypes.STRING,
+            roleId: DataTypes.INTEGER,
         },
         {
             sequelize,

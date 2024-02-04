@@ -14,4 +14,22 @@ const getAllRoles = async () => {
     }
 };
 
-export { getAllRoles };
+const postNewRole = async (data) => {
+    try {
+        if (!!data) {
+            const res = await db.Role.create();
+            const allRoles = await getAllRoles();
+            if (res)
+                return {
+                    data: allRoles.data,
+                    message: "Add new role successful",
+                };
+            throw { errorCode: 404, message: "Add new role failed" };
+        }
+        throw { errorCode: 400, message: "Add new role failed" };
+    } catch (e) {
+        throw e;
+    }
+};
+
+export { getAllRoles, postNewRole };

@@ -13,7 +13,7 @@ const getAllUsers = async () => {
             res = JSON.parse(JSON.stringify(res));
             res = res.map((item) => {
                 const { roleUserData, ...rest } = item;
-                return { ...rest, role: roleUserData.name };
+                return { ...rest, role: roleUserData?.name || null };
             });
             return {
                 data: res,

@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             Group_Permission.belongsTo(models.Role, {
                 foreignKey: "roleId",
-                targetKey: "roleId",
+                targetKey: "id",
                 as: "RGroupPermissionData",
             });
             Group_Permission.belongsTo(models.Permission, {
