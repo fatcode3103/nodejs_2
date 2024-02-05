@@ -21,10 +21,21 @@ const getAllRoles = async () => {
                 permissionId: innerItem.permission,
             }));
             const { RGroupPermissionData, ...rest } = item.get({ plain: true });
+            const modifiedPermissions = {
+                permissionName: [],
+                permissionId: [],
+            };
+            permissions.forEach((item) => {
+                if (item.name !== null) {
+                    modifiedPermissions.permissionName.push(item.name);
+                    modifiedPermissions.permissionId.push(item.permissionId);
+                }
+            });
+            console.log(modifiedPermissions);
             return {
                 ...rest,
-                permissionName: permissions.map((perm) => perm.name),
-                permissionId: permissions.map((perm) => perm.permissionId),
+                permissionName: modifiedPermissions.permissionName,
+                permissionId: modifiedPermissions.permissionId,
             };
         });
         if (res)
