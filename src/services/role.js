@@ -17,13 +17,13 @@ const getAllRoles = async () => {
         });
         const modifiedRes = res.map((item) => {
             const permissions = item.RGroupPermissionData.map((innerItem) => ({
-                name: innerItem.PGroupPermissionData.name,
+                name: innerItem.PGroupPermissionData?.name || "",
                 permissionId: innerItem.permission,
             }));
             const { RGroupPermissionData, ...rest } = item.get({ plain: true });
             return {
                 ...rest,
-                permissionName: permissions.map((perm) => perm.name),
+                permissionName: permissions.map((perm) => perm?.name || ""),
                 permissionId: permissions.map((perm) => perm.permissionId),
             };
         });
