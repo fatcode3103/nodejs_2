@@ -25,9 +25,13 @@ const getAllUsers = async () => {
                 const permissionArray = [];
                 if (roleUserData && roleUserData.RGroupPermissionData) {
                     roleUserData.RGroupPermissionData.forEach((innerItem) => {
-                        permissionArray.push(
-                            innerItem.PGroupPermissionData?.name || ""
-                        );
+                        if (
+                            innerItem.PGroupPermissionData &&
+                            innerItem.PGroupPermissionData?.name
+                        )
+                            permissionArray.push(
+                                innerItem.PGroupPermissionData.name
+                            );
                     });
                 }
                 return {
