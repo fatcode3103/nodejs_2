@@ -159,4 +159,81 @@ const updateRole = async (data) => {
     }
 };
 
-export { getAllRoles, postNewRole, getPermission, deleteRole, updateRole };
+const deletePermission = async (permissionId) => {
+    try {
+        if (!!permissionId) {
+            const res = await db.Permission.findOne({
+                where: { id: permissionId },
+            });
+            if (res) {
+                await res.destroy();
+                const allPermissions = await getPermission();
+                return {
+                    data: allPermissions.data,
+                    message: "Delete permisson successful",
+                };
+            }
+            throw { errorCode: 404, message: "Delete permisson failed" };
+        }
+        throw { errorCode: 400, message: "Permission not found" };
+    } catch (e) {
+        throw e;
+    }
+};
+
+const postNewPermission = async (data) => {
+    try {
+        if (!!data) {
+            const res = await db.Permission.create({
+                name: data.name,
+            });
+            if (res) {
+                const allPermissions = await getPermission();
+                return {
+                    data: allPermissions.data,
+                    message: "Delete permisson successful",
+                };
+            }
+            throw { errorCode: 404, message: "Delete permisson failed" };
+        }
+        throw { errorCode: 400, message: "Permission not found" };
+    } catch (e) {
+        throw e;
+    }
+};
+
+const updatePermission = async (data) => {
+    try {
+        if (!!data) {
+            const res = await db.Permission.findOne({
+                where: {
+                    id: data.permissionId,
+                },
+            });
+            await res.update({ name: data.name });
+            await res.save();
+            if (res) {
+                const allPermissions = await getPermission();
+                return {
+                    data: allPermissions.data,
+                    message: "Delete permisson successful",
+                };
+            }
+            throw { errorCode: 404, message: "Delete permisson failed" };
+        }
+        throw { errorCode: 400, message: "Permission not found" };
+    } catch (e) {
+        throw e;
+    }
+};
+
+export {
+    getAllRoles,
+    postNewRole,
+    getPermission,
+    deleteRole,
+    updateRole,
+    deletePermission,
+    postNewPermission,
+    updatePermission,
+};

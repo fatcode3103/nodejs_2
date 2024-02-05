@@ -12,8 +12,11 @@ router.put("/update-user", userController.updateUser);
 
 router.get("/get-roles", roleController.getAllRoles);
 router.post("/add-new-role", roleController.postNewRole);
-router.post("/get-permissions", roleController.getPermission);
 router.delete("/delete-role", roleController.deleteRole);
 router.put("/update-role", roleController.updateRole);
+router.post("/get-permissions", roleController.getPermission);
+router.post("/add-new-permission", roleController.postNewPermission);
+router.delete("/delete-permission", roleController.deletePermission);
+router.put("/update-permission", roleController.updatePermission);
 
 module.exports = router;
