@@ -1,7 +1,7 @@
 import express from "express";
 
-import * as userController from "../controllers/userController";
-import * as roleController from "../controllers/roleController";
+import * as userController from "../controllers/userController.js";
+import * as roleController from "../controllers/roleController.js";
 
 const router = express.Router();
 
@@ -19,4 +19,4 @@ router.post("/add-new-permission", roleController.postNewPermission);
 router.delete("/delete-permission", roleController.deletePermission);
 router.put("/update-permission", roleController.updatePermission);
 
-module.exports = router;
+export default router;

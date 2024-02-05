@@ -1,4 +1,4 @@
-import * as roleService from "../services/role";
+import * as roleService from "../services/role.js";
 
 const getAllRoles = async (req, res) => {
     try {

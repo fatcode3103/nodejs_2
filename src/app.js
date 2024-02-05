@@ -1,12 +1,11 @@
 import createError from "http-errors";
 import express from "express";
-import path from "path";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-import connectDB from "./connectDB";
+import connectDB from "../connectDB.js";
 
-import initRoutes from "./src/routes/web";
+import initRoutes from "./routes/web.js";
 
 const app = express();
 
@@ -15,7 +14,6 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
 //router
@@ -40,4 +38,4 @@ app.use(function (err, req, res, next) {
     res.render("error");
 });
 
-module.exports = app;
+export default app;
