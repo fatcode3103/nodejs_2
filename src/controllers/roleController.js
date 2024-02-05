@@ -48,4 +48,16 @@ const deleteRole = async (req, res) => {
     }
 };
 
-export { getAllRoles, postNewRole, getPermission, deleteRole };
+const updateRole = async (req, res) => {
+    try {
+        const data = await roleService.updateRole(req.body);
+        return res.status(200).json(data);
+    } catch (e) {
+        console.log(e);
+        return res
+            .status(e.errorCode || 500)
+            .json(e.message || "Error from the server");
+    }
+};
+
+export { getAllRoles, postNewRole, getPermission, deleteRole, updateRole };

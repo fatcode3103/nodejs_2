@@ -1,4 +1,5 @@
 import db from "../models/index";
+import { Op } from "sequelize";
 
 const getAllRoles = async () => {
     try {
@@ -15,11 +16,16 @@ const getAllRoles = async () => {
             },
         });
         const modifiedRes = res.map((item) => {
-            const namePermission = item.RGroupPermissionData.map(
-                (innerItem) => innerItem.PGroupPermissionData.name
-            );
+            const permissions = item.RGroupPermissionData.map((innerItem) => ({
+                name: innerItem.PGroupPermissionData.name,
+                permissionId: innerItem.permission,
+            }));
             const { RGroupPermissionData, ...rest } = item.get({ plain: true });
-            return { ...rest, namePermission: namePermission };
+            return {
+                ...rest,
+                permissionName: permissions.map((perm) => perm.name),
+                permissionId: permissions.map((perm) => perm.permissionId),
+            };
         });
         if (res)
             return {
@@ -111,4 +117,46 @@ const deleteRole = async (roleId) => {
     }
 };
 
-export { getAllRoles, postNewRole, getPermission, deleteRole };
+const updateRole = async (data) => {
+    const { name, roleId, additionId, removeId } = data;
+    try {
+        const res = await db.Role.findOne({
+            where: { id: roleId },
+        });
+        await res.update({
+            name: name,
+        });
+        if (additionId && additionId.length > 0) {
+            const bulkPermissionArray = data.additionId.map((item) => {
+                return {
+                    roleId: roleId,
+                    permission: item,
+                };
+            });
+            await db.Group_Permission.bulkCreate(bulkPermissionArray);
+        }
+        if (removeId && removeId.length > 0) {
+            for (const item in removeId) {
+                await db.Group_Permission.destroy({
+                    where: {
+                        [Op.and]: [
+                            { roleId: roleId },
+                            { permission: removeId[item] },
+                        ],
+                    },
+                });
+            }
+        }
+        const allRoles = await getAllRoles();
+        if (res)
+            return {
+                data: allRoles.data,
+                message: "Update role successful",
+            };
+        throw { errorCode: 404, message: "Update role failed" };
+    } catch (e) {
+        throw e;
+    }
+};
+
+export { getAllRoles, postNewRole, getPermission, deleteRole, updateRole };
