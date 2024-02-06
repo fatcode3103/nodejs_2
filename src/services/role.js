@@ -48,15 +48,14 @@ const getAllRoles = async () => {
     }
 };
 
-const postNewRole = async (data) => {
-    const t = await db.sequelize.transaction();
+const postNewRole = async (data, transaction, ut = false) => {
     try {
         if (!!data) {
             const role = await db.Role.create(
                 {
                     name: data.name,
                 },
-                { transaction: t }
+                { transaction: transaction }
             );
             const bulkPermissionArray = data.permissionId.map((item) => {
                 return {
@@ -66,12 +65,12 @@ const postNewRole = async (data) => {
             });
             const groupPermission = await db.Group_Permission.bulkCreate(
                 bulkPermissionArray,
-                { transaction: t }
+                { transaction: transaction }
             );
 
             const allRoles = await getAllRoles();
             if (!!role && !!groupPermission) {
-                await t.commit();
+                if (!ut) await transaction.commit();
                 return {
                     data: allRoles.data,
                     message: "Add new role successful",
@@ -81,7 +80,7 @@ const postNewRole = async (data) => {
         }
         throw { errorCode: 400, message: "Add new role failed" };
     } catch (e) {
-        await t.rollback();
+        await transaction.rollback();
         throw e;
     }
 };
@@ -100,19 +99,22 @@ const getPermission = async () => {
     }
 };
 
-const deleteRole = async (roleId) => {
+const deleteRole = async (roleId, transaction) => {
     try {
         if (!!roleId) {
             const res = await db.Role.findOne({
                 where: { id: roleId },
             });
             if (res) {
-                await res.destroy();
-                await db.Group_Permission.destroy({
-                    where: {
-                        roleId: roleId,
+                await res.destroy({ transaction: transaction });
+                await db.Group_Permission.destroy(
+                    {
+                        where: {
+                            roleId: roleId,
+                        },
                     },
-                });
+                    { transaction: transaction }
+                );
                 const allRoles = await getAllRoles();
                 return {
                     data: allRoles.data,
@@ -127,15 +129,18 @@ const deleteRole = async (roleId) => {
     }
 };
 
-const updateRole = async (data) => {
+const updateRole = async (data, transaction) => {
     const { name, roleId, additionId, removeId } = data;
     try {
         const res = await db.Role.findOne({
             where: { id: roleId },
         });
-        await res.update({
-            name: name,
-        });
+        await res.update(
+            {
+                name: name,
+            },
+            { transaction: transaction }
+        );
         if (additionId && additionId.length > 0) {
             const bulkPermissionArray = data.additionId.map((item) => {
                 return {
@@ -143,18 +148,23 @@ const updateRole = async (data) => {
                     permission: item,
                 };
             });
-            await db.Group_Permission.bulkCreate(bulkPermissionArray);
+            await db.Group_Permission.bulkCreate(bulkPermissionArray, {
+                transaction: transaction,
+            });
         }
         if (removeId && removeId.length > 0) {
             for (const item in removeId) {
-                await db.Group_Permission.destroy({
-                    where: {
-                        [Op.and]: [
-                            { roleId: roleId },
-                            { permission: removeId[item] },
-                        ],
+                await db.Group_Permission.destroy(
+                    {
+                        where: {
+                            [Op.and]: [
+                                { roleId: roleId },
+                                { permission: removeId[item] },
+                            ],
+                        },
                     },
-                });
+                    { transaction: transaction }
+                );
             }
         }
         const allRoles = await getAllRoles();
@@ -169,14 +179,14 @@ const updateRole = async (data) => {
     }
 };
 
-const deletePermission = async (permissionId) => {
+const deletePermission = async (permissionId, transaction) => {
     try {
         if (!!permissionId) {
             const res = await db.Permission.findOne({
                 where: { id: permissionId },
             });
             if (res) {
-                await res.destroy();
+                await res.destroy({ transaction: transaction });
                 const allPermissions = await getPermission();
                 return {
                     data: allPermissions.data,
@@ -191,20 +201,23 @@ const deletePermission = async (permissionId) => {
     }
 };
 
-const postNewPermission = async (data) => {
+const postNewPermission = async (data, transaction) => {
     try {
         if (!!data) {
-            const res = await db.Permission.create({
-                name: data.name,
-            });
+            const res = await db.Permission.create(
+                {
+                    name: data.name,
+                },
+                { transaction: transaction }
+            );
             if (res) {
                 const allPermissions = await getPermission();
                 return {
                     data: allPermissions.data,
-                    message: "Delete permisson successful",
+                    message: "Add new permisson successful",
                 };
             }
-            throw { errorCode: 404, message: "Delete permisson failed" };
+            throw { errorCode: 404, message: "Add new permisson failed" };
         }
         throw { errorCode: 400, message: "Permission not found" };
     } catch (e) {
@@ -212,7 +225,7 @@ const postNewPermission = async (data) => {
     }
 };
 
-const updatePermission = async (data) => {
+const updatePermission = async (data, transaction) => {
     try {
         if (!!data) {
             const res = await db.Permission.findOne({
@@ -220,16 +233,16 @@ const updatePermission = async (data) => {
                     id: data.permissionId,
                 },
             });
-            await res.update({ name: data.name });
+            await res.update({ name: data.name }, { transaction: transaction });
             await res.save();
             if (res) {
                 const allPermissions = await getPermission();
                 return {
                     data: allPermissions.data,
-                    message: "Delete permisson successful",
+                    message: "Update permisson successful",
                 };
             }
-            throw { errorCode: 404, message: "Delete permisson failed" };
+            throw { errorCode: 404, message: "Update permisson failed" };
         }
         throw { errorCode: 400, message: "Permission not found" };
     } catch (e) {

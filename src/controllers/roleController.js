@@ -1,4 +1,5 @@
 import * as roleService from "../services/role.js";
+import db from "../models/index.js";
 
 const getAllRoles = async (req, res) => {
     try {
@@ -14,7 +15,8 @@ const getAllRoles = async (req, res) => {
 
 const postNewRole = async (req, res) => {
     try {
-        const data = await roleService.postNewRole(req.body);
+        const transaction = await db.sequelize.transaction();
+        const data = await roleService.postNewRole(req.body, transaction);
         return res.status(200).json(data);
     } catch (e) {
         console.log(e);

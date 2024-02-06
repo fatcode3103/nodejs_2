@@ -100,26 +100,29 @@ const deleteUser = async (userId, transaction) => {
     }
 };
 
-const updateUser = async (data) => {
+const updateUser = async (data, transaction) => {
     try {
         if (!!data) {
             const res = await db.User.findOne({
                 where: { id: data.id },
             });
             if (res) {
-                await res.update({
-                    name: data.name,
-                    age: data.age,
-                    roleId: data.roleId,
-                });
+                await res.update(
+                    {
+                        name: data.name,
+                        age: data.age,
+                        roleId: data.roleId,
+                    },
+                    { transaction, transaction }
+                );
                 await res.save();
                 const allUsers = await getAllUsers();
                 return {
                     data: allUsers.data,
-                    message: "Delete user successful",
+                    message: "Update user successful",
                 };
             }
-            throw { errorCode: 404, message: "Delete user failed" };
+            throw { errorCode: 404, message: "Update user failed" };
         }
         throw { errorCode: 400, message: "User not found" };
     } catch (e) {
