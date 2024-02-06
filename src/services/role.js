@@ -31,7 +31,6 @@ const getAllRoles = async () => {
                     modifiedPermissions.permissionId.push(item.permissionId);
                 }
             });
-            console.log(modifiedPermissions);
             return {
                 ...rest,
                 permissionName: modifiedPermissions.permissionName,

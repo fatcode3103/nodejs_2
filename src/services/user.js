@@ -53,14 +53,17 @@ const getAllUsers = async () => {
     }
 };
 
-const postNewUser = async (data) => {
+const postNewUser = async (data, transaction) => {
     try {
         if (!!data) {
-            const res = await db.User.create({
-                name: data.name,
-                age: data.age,
-                roleId: data.roleId,
-            });
+            const res = await db.User.create(
+                {
+                    name: data.name,
+                    age: data.age,
+                    roleId: data.roleId,
+                },
+                { transaction: transaction }
+            );
             const allUsers = await getAllUsers();
             if (res)
                 return {
@@ -75,14 +78,14 @@ const postNewUser = async (data) => {
     }
 };
 
-const deleteUser = async (userId) => {
+const deleteUser = async (userId, transaction) => {
     try {
         if (!!userId) {
             const res = await db.User.findOne({
                 where: { id: userId },
             });
             if (res) {
-                await res.destroy();
+                await res.destroy({ transaction: transaction });
                 const allUsers = await getAllUsers();
                 return {
                     data: allUsers.data,
